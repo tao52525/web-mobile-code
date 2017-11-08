@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>hello</title>
+</head>
+<body>
+<header>Hello World!</header>
+<video id="video" autoplay style="width: 720px;height: 1080px"></video>
+<div><button id="capture" style="padding: 20px">拍照</button></div>
+<canvas id="canvas" width="720" height="1080"></canvas>
+
+<script type="text/javascript">
+	function getUserMedia(constraints, success, error) {
+		if (navigator.mediaDevices.getUserMedia) {
+			navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error)
+		} else if (navigator.webkitGetUserMedia) {
+			navigator.webkitGetUserMedia(constraints, success, error)
+		} else if (navigator.mozGetUserMedia) {
+			navigator.mozGetUserMedia(constraints, success, error)
+		} else if (navigator.getUserMedia) {
+			navigator.getUserMedia(constraints, success, error)
+		}
+	}
+
+	let video = document.querySelector('#video')
+	let canvas = document.querySelector('#canvas')
+	let context = canvas.getContext('2d')
+
+	function success(stream) {
+		var CompatibleURL = window.URL || window.webkitURL
+		video.src = CompatibleURL.createObjectURL(stream)
+		video.play()
+	}
+
+	function error(err) {
+		console.log('访问用户媒体设备失败：', error.name, error.message)
+	}
+
+	if (navigator.mediaDevices.getUserMedia || navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia) {
+		getUserMedia({ video: { facingMode: { exact: 'environment' }, width:720, height:1080 }}, success, error)
+	} else {
+		alert('浏览器不支持！')
+	}
+
+	document.querySelector('#capture').addEventListener('click', function () {
+		context.drawImage(video, 0, 0, 720, 1080)
+	})
+</script>
+</body>
+</html>
